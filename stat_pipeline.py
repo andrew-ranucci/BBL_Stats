@@ -20,7 +20,7 @@ def main():
     
     
     with open("data/last_updated.json", "w") as f:
-        json.dump({"last_updated": datetime.now().strftime("%Y-%m-%d")}, f, indent=4)
+        json.dump({"last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}, f, indent=4)
 
 if __name__ == "__main__":
     main()
