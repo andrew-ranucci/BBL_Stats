@@ -199,6 +199,19 @@ function renderTeams() {
   });
 }
 
+function renderMVP(data) {
+  const container = document.getElementById("mvp-ladder");
+  if (!container) return;
+
+  container.innerHTML = data.map(row => `
+    <div class="mvp-card rank-${row.Rank}">
+      <div class="mvp-rank">#${row.Rank}</div>
+      <div class="mvp-player">${row.Player}</div>
+      <div class="mvp-team">${row.Team}</div>
+    </div>
+  `).join("");
+}
+
 async function main() {
     // last updated (cache-busted)
   let v = Date.now();
@@ -218,6 +231,10 @@ async function main() {
 
   const t = await fetch(`data/team_stats.json?v=${v}`);
   teams = await t.json();
+
+  const a = await fetch(`data/awards.json?v=${v}`);
+  const awards = await a.json();
+  renderMVP(awards);
 
   // leaders + tables
   renderLeaders();

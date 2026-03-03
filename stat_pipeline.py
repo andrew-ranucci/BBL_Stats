@@ -8,11 +8,14 @@ def main():
     path = r"C:\\Users\\andre\\BBL_Stats_DATA\\BBL Season 2 Stats.xlsx"
     df_players = pd.read_excel(path, sheet_name="Season Stats")
     df_teams = pd.read_excel(path, sheet_name="Team Stats")
+    df_mvp = pd.read_excel(path, sheet_name="Awards")
+    
 
     os.makedirs("data", exist_ok=True)
 
     df_players.to_json("data/season_stats.json", orient="records", indent=4)
     df_teams.to_json("data/team_stats.json", orient="records", indent=4)
+    df_mvp.to_json("data/awards.json", orient="records", indent=4)
 
     
     
