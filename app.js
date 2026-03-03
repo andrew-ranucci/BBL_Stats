@@ -200,21 +200,23 @@ function renderTeams() {
 }
 
 async function main() {
-  // last updated
+    // last updated (cache-busted)
+  let v = Date.now();
   try {
-    const u = await fetch("data/last_updated.json");
+    const u = await fetch("data/last_updated.json?v=" + Date.now());
     const uj = await u.json();
+    v = encodeURIComponent(uj.last_updated ?? Date.now());
     document.getElementById("last-updated").textContent =
       `Last updated: ${uj.last_updated ?? "Unknown"}`;
   } catch {
     document.getElementById("last-updated").textContent = "Last updated: Unknown";
   }
 
-  // load data
-  const p = await fetch("data/season_stats.json");
+  // load data (cache-busted using v)
+  const p = await fetch(`data/season_stats.json?v=${v}`);
   players = await p.json();
 
-  const t = await fetch("data/team_stats.json");
+  const t = await fetch(`data/team_stats.json?v=${v}`);
   teams = await t.json();
 
   // leaders + tables

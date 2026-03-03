@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 
 def main():
-    path = r"C:\\Users\\andre\\OneDrive\\Desktop\\BBL_SEASON_2\\BBL Season 2 Stats.xlsx" 
+    path = r"C:\\Users\\andre\\BBL_Stats_DATA\\BBL Season 2 Stats.xlsx"
     df_players = pd.read_excel(path, sheet_name="Season Stats")
     df_teams = pd.read_excel(path, sheet_name="Team Stats")
 
