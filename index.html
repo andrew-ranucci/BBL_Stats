@@ -4,34 +4,59 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>League Stats</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=1" />
 </head>
 <body>
   <header class="container">
-    <h1>League Stats</h1>
-    <p id="last-updated" class="muted">Last updated: …</p>
+    <div class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>League Stats</h1>
+          <div class="subline" id="last-updated">Last updated: …</div>
+        </div>
+        <div class="pills">
+          <div class="pill">Sortable tables</div>
+          <div class="pill">Top 3 leaders</div>
+          <div class="pill">MVP ladder</div>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main class="container">
-    <section>
+
+    <section class="section">
       <h2>League Leaders</h2>
       <div id="leaders" class="leaders-grid"></div>
-      <h2> MVP Ladder</h2>
-      <div id="mvp-ladder" class="mvp-container"></div>
     </section>
 
-    <section style="margin-top: 18px;">
-      <h2>Players</h2>
-      <input id="player-search" class="search" placeholder="Search player…" />
-      <div id="players-table"></div>
+    <section class="section">
+      <div class="section-head">
+        <h2>MVP Ladder</h2>
+        <div class="muted tiny">Subjective (updated weekly)</div>
+      </div>
+      <div id="mvp-ladder" class="mvp-grid"></div>
     </section>
 
-    <section style="margin-top: 32px;">
+    <section class="section">
+      <div class="section-head">
+        <h2>Players</h2>
+        <input id="player-search" class="search" placeholder="Search player…" />
+      </div>
+      <div class="table-wrap">
+        <div id="players-table"></div>
+      </div>
+    </section>
+
+    <section class="section">
       <h2>Teams</h2>
-      <div id="teams-table"></div>
+      <div class="table-wrap">
+        <div id="teams-table"></div>
+      </div>
     </section>
+
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=1"></script>
 </body>
 </html>
