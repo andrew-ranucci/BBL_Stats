@@ -1,6 +1,5 @@
 TO UPDATE:
 
 1. Save Excel File and CLOSE IT OUT or pipeline will not run
-2. Run python script
-3. Grab files from data folder and upload it to repo to replace old ones
-4. URL is: https://andrew-ranucci.github.io/BBL_Stats/
+2.Run update_stats.bat by double clicking on it
+3. URL is: https://andrew-ranucci.github.io/BBL_Stats/
