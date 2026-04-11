@@ -1,7 +1,7 @@
 [
     {
         "Player":"SamL",
-        "Team":"TELAVIV",
+        "Team":"WESTDIST",
         "PPG":11.5,
         "RPG":3.5,
         "APG":2.0,
@@ -113,7 +113,7 @@
     },
     {
         "Player":"Andrew",
-        "Team":"TELAVIV",
+        "Team":"WESTDIST",
         "PPG":16.0,
         "RPG":5.0,
         "APG":4.0,
@@ -161,7 +161,7 @@
     },
     {
         "Player":"SamO",
-        "Team":"TELAVIV",
+        "Team":"WESTDIST",
         "PPG":26.0,
         "RPG":7.0,
         "APG":5.0,
