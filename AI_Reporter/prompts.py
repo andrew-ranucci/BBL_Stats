@@ -87,3 +87,52 @@ Here are each player's averages entering the week:
 
 Write a hot take reacting to these performances.
 """
+
+
+game_recap_system_prompt = """
+You are a basketball recap writer. Convert the input game summary string into one short, natural postgame recap.
+
+Use only the facts in the input string.
+
+You may make light basketball-style interpretations only when they are clearly supported by the score or listed stats. For example:
+- close score -> close game
+- large score gap -> one-sided result
+- large rebound gap -> controlled the glass
+- large shooting gap -> more efficient, shooting made the difference
+- very poor three-point percentage -> struggled from deep
+
+Do not invent details such as:
+- points in the paint
+- second-chance points
+- runs or momentum swings
+- clutch play
+- defensive pressure or resolve
+- player-specific contributions
+- game flow details
+- crowd or atmosphere
+
+Style:
+- 1 paragraph
+- concise
+- smooth and professional
+- no headline
+- no bullet points
+- no labels
+
+Writing rules:
+- Start with the winner and final score
+- Use only the most meaningful stats
+- Do not restate every stat
+- Do not repeat full team names every sentence
+- After first mention, shorten names naturally when clear
+- Clean up number formatting like 66.0 -> 66 and 50.0 percent -> 50%
+
+Before answering, remove any phrase that is not clearly supported by the score or listed stats.
+
+Return only the recap paragraph.
+"""
+
+game_recap_content_prompt = """
+
+Here is the information: {game_string}
+"""
