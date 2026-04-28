@@ -1,6 +1,21 @@
 from google import genai
 from google.genai import types
+import pandas as pd
 import wave
+
+#Helper to get rid of .0 decimal in AI script
+def clean_num(x):
+    if pd.isna(x):
+        return "0"
+    x = float(x)
+    if x.is_integer():
+        return str(int(x))
+    return f"{x:.1f}"
+
+#Helper to write the scripts to files
+def write_report_to_file(report, filename):
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(report)
 
 class reporter:
     def __init__(self,system_prompt,content_prompt,TAG_system_prompt,TAG_content_prompt):
@@ -13,13 +28,20 @@ class reporter:
 
     def generate_report(self):
         client = genai.Client()
-        reporter_response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
-            config=types.GenerateContentConfig(system_instruction=self.system_prompt),contents=self.content_prompt
-        )
-        self.generated_report = reporter_response.text
+
+        try:
+            reporter_response = client.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                config=types.GenerateContentConfig(system_instruction=self.system_prompt),contents=self.content_prompt
+            )
+            self.generated_report = reporter_response.text
+        except Exception as e:
+            print("Gemini failed script creation failed")
+       
 
     def add_audio_tags(self):
+
+        print("Attemtping to add tags")
 
         if(self.generated_report == None):
             print("No prompt generated")
@@ -30,12 +52,19 @@ class reporter:
         )
 
         client = genai.Client()
-        reporter_response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
-            config=types.GenerateContentConfig(system_instruction=self.TAG_system_prompt),contents=self.TAG_content_prompt
-        )
-        print(reporter_response.text)
-        self.generated_report = reporter_response.text
+
+        try:
+            reporter_response = client.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                config=types.GenerateContentConfig(system_instruction=self.TAG_system_prompt),contents=self.TAG_content_prompt
+                
+            )
+            self.generated_report = reporter_response.text
+        except Exception as e:
+            print("Gemini audio tag generation failed")
+        
+        print("Audio Tags added successfully")
+        
         
     
     def process_game_logs(self,game_logs,current_week):
@@ -59,9 +88,13 @@ class reporter:
             'past_game_logs':past_game_logs
         }
 
+        print("Processing Game Logs......Success!")
+
         return week_logs
     
     def convert_to_audio(self,voice,file_name):
+
+        print("Attempting to convert to audio")
 
         # Set up the wave file to save the output:
         def wave_file(filename, pcm, channels=1, rate=24000, sample_width=2):
@@ -77,20 +110,23 @@ class reporter:
 
         client = genai.Client()
 
-        response = client.models.generate_content(
-        model="gemini-3.1-flash-tts-preview",
-        contents=self.generated_report,
-        config=types.GenerateContentConfig(
-            response_modalities=["AUDIO"],
-            speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                    voice_name=voice,
+        try:
+            response = client.models.generate_content(
+            model="gemini-3.1-flash-tts-preview",
+            contents=self.generated_report,
+            config=types.GenerateContentConfig(
+                response_modalities=["AUDIO"],
+                speech_config=types.SpeechConfig(
+                    voice_config=types.VoiceConfig(
+                        prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                        voice_name=voice,
+                        )
                     )
-                )
-            ),
-        )
-        )
+                ),
+            )
+            )
+        except Exception as e:
+            print("Gemini tts failed")
 
         print("Audio generated successfully")
 
@@ -98,7 +134,16 @@ class reporter:
 
         wave_file(file_name, data)
         return None
+    
+    #Eventually use this in main
+    def run_reporter(self):
+        self.process_game_logs()
+        self.generate_report()
 
+        #NEED TO FIGURE OUT FILE NAME HERE
+        write_report_to_file(self.generated_report,filename="")
+        self.add_audio_tags()
+        self.convert_to_audio()
 
 
 
@@ -122,7 +167,7 @@ class hot_take_reporter(reporter):
         lines = []
 
         for _, row in player_averages.iterrows():
-            line = f"{row['Name']} averages {row['PTS']:.1f} points, {row['FG_P']:.1f}% field goal percentage, {row['3P_P']:.1f}% three point percentage, {row['REB']:.1f} rebounds, {row['AST']:.1f} assists, {row['STL']:.1f} steals, and {row['BLK']:.1f} blocks"
+            line = f"{row['Name']} averages {clean_num(row['PTS'])} points, {clean_num(row['FG_P'])}% field goal percentage, {clean_num(row['3P_P'])}% three point percentage, {clean_num(row['REB'])} rebounds, {clean_num(row['AST'])} assists, {clean_num(row['STL'])} steals, and {clean_num(row['BLK'])} blocks"
             lines.append(line)
 
         averages_string = "\n".join(lines) 
@@ -131,8 +176,9 @@ class hot_take_reporter(reporter):
         #Creat current week string
         lines = []
 
+        
         for _, row in current_week_log.iterrows():
-            line = f"{row['Name']} had {row['PTS']:.1f} points, shot {row['FG_P']:.1f}% from the field, shot {row['3P_P']:.1f}% on three pointers, and had {row['REB']:.1f} rebounds, {row['AST']:.1f} assists, {row['STL']:.1f} steals, and {row['BLK']:.1f} blocks this week"
+            line = f"{row['Name']} had {clean_num(row['PTS'])} points, shot {clean_num(row['FG_P'])}% from the field, shot {clean_num(row['3P_P'])}% on three pointers, and had {clean_num(row['REB'])} rebounds, {clean_num(row['AST'])} assists, {clean_num(row['STL'])} steals, and {clean_num(row['BLK'])} blocks this week"
             lines.append(line)
 
         current_string = "\n".join(lines)
@@ -156,28 +202,28 @@ class regular_reporter(reporter):
         current_week_log = week_logs['current_week_log']
 
         pt_leader = current_week_log.sort_values(by=('PTS'),ascending=False).head(1)[['Name','PTS']]
-        pt_leader_string = f"The leader in points scored was {pt_leader['Name'].iloc[0]} with {pt_leader['PTS'].iloc[0]} points\n"
+        pt_leader_string = f"The leader in points scored was {pt_leader['Name'].iloc[0]} with {clean_num(pt_leader['PTS'].iloc[0])} points\n"
 
         threepm_leader = current_week_log.sort_values(by=('3PM'),ascending=False).head(1)[['Name','3PM']]
-        threepm_leader_string = f"The leader in 3 pointers made was {threepm_leader['Name'].iloc[0]} with {threepm_leader['3PM'].iloc[0]} three pointers made\n"
+        threepm_leader_string = f"The leader in 3 pointers made was {threepm_leader['Name'].iloc[0]} with {clean_num(threepm_leader['3PM'].iloc[0])} three pointers made\n"
 
         fgp_leader = current_week_log.sort_values(by=('FG_P'),ascending=False).head(1)[['Name','FG_P']]
-        fgp_leader_string = f"The leader in field goal percent was {fgp_leader['Name'].iloc[0]} shooting {fgp_leader['FG_P'].iloc[0]}%\n"
+        fgp_leader_string = f"The leader in field goal percent was {fgp_leader['Name'].iloc[0]} shooting {clean_num(fgp_leader['FG_P'].iloc[0])}%\n"
 
         threepp_leader = current_week_log.sort_values(by=('3P_P'),ascending=False).head(1)[['Name','3P_P']]
-        threepp_leader_string = f"The leader in three point percent was {threepp_leader['Name'].iloc[0]} shooting {threepp_leader['3P_P'].iloc[0]}%\n"
+        threepp_leader_string = f"The leader in three point percent was {threepp_leader['Name'].iloc[0]} shooting {clean_num(threepp_leader['3P_P'].iloc[0])}%\n"
 
         reb_leader = current_week_log.sort_values(by=('REB'),ascending=False).head(1)[['Name','REB']]
-        reb_leader_string = f"The leader in rebounds was {reb_leader['Name'].iloc[0]} with {reb_leader['REB'].iloc[0]} rebounds\n"
+        reb_leader_string = f"The leader in rebounds was {reb_leader['Name'].iloc[0]} with {clean_num(reb_leader['REB'].iloc[0])} rebounds\n"
 
         ast_leader = current_week_log.sort_values(by=('AST'),ascending=False).head(1)[['Name','AST']]
-        ast_leader_string = f"The leader in assists was {ast_leader['Name'].iloc[0]} with {ast_leader['AST'].iloc[0]} assists\n"
+        ast_leader_string = f"The leader in assists was {ast_leader['Name'].iloc[0]} with {clean_num(ast_leader['AST'].iloc[0])} assists\n"
 
         stl_leader = current_week_log.sort_values(by=('STL'),ascending=False).head(1)[['Name','STL']]
-        stl_leader_string = f"The leader in steals was {stl_leader['Name'].iloc[0]} with {stl_leader['STL'].iloc[0]} steals\n"
+        stl_leader_string = f"The leader in steals was {stl_leader['Name'].iloc[0]} with {clean_num(stl_leader['STL'].iloc[0])} steals\n"
 
         blk_leader = current_week_log.sort_values(by=('BLK'),ascending=False).head(1)[['Name','BLK']]
-        blk_leader_string = f"The leader in blocks was {blk_leader['Name'].iloc[0]} with {blk_leader['BLK'].iloc[0]} blocks\n"
+        blk_leader_string = f"The leader in blocks was {blk_leader['Name'].iloc[0]} with {clean_num(blk_leader['BLK'].iloc[0])} blocks\n"
 
         total_string = f"{pt_leader_string}{fgp_leader_string}{threepp_leader_string}{threepm_leader_string}{reb_leader_string}{ast_leader_string}{stl_leader_string}{blk_leader_string}"
 
@@ -195,7 +241,7 @@ class regular_reporter(reporter):
 def process_game(game_team_groups,team_names):
         winner = game_team_groups.iloc[game_team_groups['PTS'].idxmax()]
         loser = game_team_groups.iloc[game_team_groups['PTS'].idxmin()]
-        return f"{team_names[winner["Team"]]} beat {team_names[loser["Team"]]} {winner["PTS"]} to {loser["PTS"]}. {team_names[winner["Team"]]} had {winner['REB']} rebounds, {winner['AST']} assists, {winner['STL']} steals, {winner['BLK']} blocks and shot {winner['FG_P']} percent from the field and shot {winner['3P_P']} percent from three. {team_names[loser["Team"]]} had {loser['REB']} rebounds, {loser['AST']} assists, {loser['STL']} steals, {loser['BLK']} blocks and shot {loser['FG_P']} percent from the field and shot {loser['3P_P']} percent from three." 
+        return f"{team_names[winner["Team"]]} beat {team_names[loser["Team"]]} {clean_num(winner["PTS"])} to {clean_num(loser["PTS"])}. {team_names[winner["Team"]]} had {clean_num(winner['REB'])} rebounds, {clean_num(winner['AST'])} assists, {clean_num(winner['STL'])} steals, {clean_num(winner['BLK'])} blocks and shot {clean_num(winner['FG_P'])} percent from the field and shot {clean_num(winner['3P_P'])} percent from three. {team_names[loser["Team"]]} had {clean_num(loser['REB'])} rebounds, {clean_num(loser['AST'])} assists, {clean_num(loser['STL'])} steals, {clean_num(loser['BLK'])} blocks and shot {clean_num(loser['FG_P'])} percent from the field and shot {clean_num(loser['3P_P'])} percent from three." 
 
 class game_recap_reporter(reporter):
 
@@ -205,9 +251,10 @@ class game_recap_reporter(reporter):
     def process_game_logs(self,game_logs,current_week):
         week_logs = super().process_game_logs(game_logs,current_week)
         current_week_log = week_logs['current_week_log']
+        current_week_log = current_week_log.reset_index(drop=True)
 
-        #Split into games
-        game1_id = current_week_log.at[17,'Game_ID']
+        
+        game1_id = current_week_log.at[0,'Game_ID']
 
         game1 = current_week_log[current_week_log['Game_ID'] == game1_id]
         game2 = current_week_log[current_week_log['Game_ID'] != game1_id]
@@ -247,7 +294,7 @@ class game_recap_reporter(reporter):
 
         
 
-    def generate_report(self,n_games):
+    def generate_report(self):
         reports = []
 
         for prompt in self.content_prompt:

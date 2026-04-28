@@ -3,32 +3,53 @@ import os
 from google import genai
 from google.genai import types
 import pandas as pd
-from prompts import reporter_system_prompt, reporter_content_prompt, hot_take_content_prompt, hot_take_system_prompt, game_recap_content_prompt, game_recap_system_prompt,TAG_content_prompt,reporter_TAG_system_prompt,hot_take_TAG_system_prompt,game_recap_TAG_system_prompt
+from prompts import reporter_system_prompt, reporter_content_prompt, hot_take_content_prompt, hot_take_week_one_system_prompt, hot_take_system_prompt, game_recap_content_prompt, game_recap_system_prompt,TAG_content_prompt,reporter_TAG_system_prompt,hot_take_TAG_system_prompt,game_recap_TAG_system_prompt
 import argparse
 import reporters
+
+#Remove this later and leave in reporters.py
+def write_report_to_file(report, filename):
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(report)
 
 #Runs all the reporters and creates a dictionary of their scripts, might have them convert their own text to speech
 #Fine for now just to see the output scripts
 def create_scripts(game_logs,current_week):
-    #regular_stats_reporter = reporters.regular_reporter(reporter_system_prompt,reporter_content_prompt,reporter_TAG_system_prompt,TAG_content_prompt)
-    hot_take_reporter = reporters.hot_take_reporter(hot_take_system_prompt,hot_take_content_prompt,hot_take_TAG_system_prompt,TAG_content_prompt)
-    #game_recap_reporter = reporters.game_recap_reporter(game_recap_system_prompt,game_recap_content_prompt,game_recap_TAG_system_prompt,TAG_content_prompt)
+    regular_stats_reporter = reporters.regular_reporter(reporter_system_prompt,reporter_content_prompt,reporter_TAG_system_prompt,TAG_content_prompt)
+    if(current_week == 1):
+        hot_take_reporter = reporters.hot_take_reporter(hot_take_week_one_system_prompt,hot_take_content_prompt,hot_take_TAG_system_prompt,TAG_content_prompt)
+    else:
+        hot_take_reporter = reporters.hot_take_reporter(hot_take_system_prompt,hot_take_content_prompt,hot_take_TAG_system_prompt,TAG_content_prompt)
+    game_recap_reporter = reporters.game_recap_reporter(game_recap_system_prompt,game_recap_content_prompt,game_recap_TAG_system_prompt,TAG_content_prompt)
+
+
+
+
 
     #regular_stats_reporter.process_game_logs(game_logs,current_week)
-    hot_take_reporter.process_game_logs(game_logs,current_week)
-    #game_recap_reporter.process_game_logs(game_logs,current_week)
+    #hot_take_reporter.process_game_logs(game_logs,current_week)
+    game_recap_reporter.process_game_logs(game_logs,current_week)
 
     #regular_stats_reporter.generate_report()
-    hot_take_reporter.generate_report()
-    #game_recap_reporter.generate_report()
+    #hot_take_reporter.generate_report()
+    game_recap_reporter.generate_report()
+
+    #write_report_to_file(regular_stats_reporter.generated_report,filename="regular_report.txt")
+    #write_report_to_file(hot_take_reporter.generated_report,filename="hot_take_report.txt")
+    count = 1
+    for report in game_recap_reporter.generated_report:
+         filename = f"game_recap_report_{count}.txt"
+         write_report_to_file(report,filename=filename)
+         count += 1
+    
 
     #regular_stats_reporter.add_audio_tags()
-    hot_take_reporter.add_audio_tags()
-    #game_recap_reporter.add_audio_tags()
+    #hot_take_reporter.add_audio_tags()
+    game_recap_reporter.add_audio_tags()
 
     #regular_stats_reporter.convert_to_audio()
-    hot_take_reporter.convert_to_audio()
-    #game_recap_reporter.convert_to_audio()
+    #hot_take_reporter.convert_to_audio()
+    game_recap_reporter.convert_to_audio()
 
 
 
