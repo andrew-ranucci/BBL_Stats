@@ -6,6 +6,9 @@ import pandas as pd
 from prompts import reporter_system_prompt, reporter_content_prompt, hot_take_content_prompt, hot_take_week_one_system_prompt, hot_take_system_prompt, game_recap_content_prompt, game_recap_system_prompt,TAG_content_prompt,reporter_TAG_system_prompt,hot_take_TAG_system_prompt,game_recap_TAG_system_prompt
 import argparse
 import reporters
+from pathlib import Path
+import wave
+from show_scripts import intro
 
 #Remove this later and leave in reporters.py
 def write_report_to_file(report, filename):
@@ -37,11 +40,13 @@ def create_scripts(game_logs,current_week):
     #write_report_to_file(regular_stats_reporter.generated_report,filename="regular_report.txt")
     #write_report_to_file(hot_take_reporter.generated_report,filename="hot_take_report.txt")
     count = 1
+    
+    '''
     for report in game_recap_reporter.generated_report:
          filename = f"game_recap_report_{count}.txt"
          write_report_to_file(report,filename=filename)
          count += 1
-    
+    '''
 
     #regular_stats_reporter.add_audio_tags()
     #hot_take_reporter.add_audio_tags()
@@ -59,8 +64,46 @@ def create_scripts(game_logs,current_week):
 
 #Need to either make this or give every reporter the ability to convert its text to speech??
 #Need more research to figure this out
-def convert_to_podcast():
-    return None
+def convert_to_podcast(week_num):
+    load_dotenv()
+    p = Path("conclusion.wav")
+    if p.is_file():
+        print("Conclusion found")
+    else:
+        print("Conclusion does not exist")
+        return None
+    
+    def wave_file(filename, pcm, channels=1, rate=24000, sample_width=2):
+            with wave.open(filename, "wb") as wf:
+                wf.setnchannels(channels)
+                wf.setsampwidth(sample_width)
+                wf.setframerate(rate)
+                wf.writeframes(pcm)
+      
+    back = None       
+    if(week_num == 1):
+        back = 'back'
+    script = intro.format(week_num = week_num,back=back)
+    client = genai.Client()
+
+    response = client.models.generate_content(
+    model="gemini-3.1-flash-tts-preview",
+    contents=script,
+        config=types.GenerateContentConfig(
+        response_modalities=["AUDIO"],
+        speech_config=types.SpeechConfig(
+                voice_config=types.VoiceConfig(
+                    prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                    voice_name='Schedar',
+                    )
+                )
+                ),
+            )
+            )
+
+    data = response.candidates[0].content.parts[0].inline_data.data
+
+    wave_file('intro.wav', data)
 
 
 def main():
@@ -72,7 +115,11 @@ def main():
     game_logs = pd.read_excel("C:\\Users\\andre\\BBL_Stats_DATA\\BBL Season 2 Stats.xlsx",sheet_name="Game Logs")
     game_logs = game_logs.dropna()
 
-    create_scripts(game_logs,args.current_week)
+    #create_scripts(game_logs,args.current_week)
+    
+    convert_to_podcast(args.current_week)
+
+    # Do like an if exists already if not then do nothing for the intro script cuz no need to keep regenerating it over and over again
 
 
 

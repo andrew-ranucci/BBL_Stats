@@ -35,6 +35,7 @@ class reporter:
                 config=types.GenerateContentConfig(system_instruction=self.system_prompt),contents=self.content_prompt
             )
             self.generated_report = reporter_response.text
+            return self.generated_report
         except Exception as e:
             print("Gemini failed script creation failed")
        
@@ -47,7 +48,7 @@ class reporter:
             print("No prompt generated")
             return None
 
-        self.TAG_content_prompt = self.TAG_content_prompt.format(
+        tag_content_prompt = self.TAG_content_prompt.format(
             TAG_script = self.generated_report
         )
 
@@ -56,12 +57,14 @@ class reporter:
         try:
             reporter_response = client.models.generate_content(
                 model="gemini-2.5-flash-lite",
-                config=types.GenerateContentConfig(system_instruction=self.TAG_system_prompt),contents=self.TAG_content_prompt
+                config=types.GenerateContentConfig(system_instruction=tag_content_prompt),contents=self.TAG_content_prompt
                 
             )
             self.generated_report = reporter_response.text
+            return self.generated_report
         except Exception as e:
             print("Gemini audio tag generation failed")
+            return None
         
         print("Audio Tags added successfully")
         
@@ -110,23 +113,20 @@ class reporter:
 
         client = genai.Client()
 
-        try:
-            response = client.models.generate_content(
-            model="gemini-3.1-flash-tts-preview",
-            contents=self.generated_report,
-            config=types.GenerateContentConfig(
-                response_modalities=["AUDIO"],
-                speech_config=types.SpeechConfig(
-                    voice_config=types.VoiceConfig(
-                        prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                        voice_name=voice,
-                        )
+        response = client.models.generate_content(
+        model="gemini-3.1-flash-tts-preview",
+        contents=self.generated_report,
+        config=types.GenerateContentConfig(
+            response_modalities=["AUDIO"],
+            speech_config=types.SpeechConfig(
+                voice_config=types.VoiceConfig(
+                    prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                    voice_name=voice,
                     )
-                ),
-            )
-            )
-        except Exception as e:
-            print("Gemini tts failed")
+                )
+            ),
+        )
+        )
 
         print("Audio generated successfully")
 
@@ -309,8 +309,16 @@ class game_recap_reporter(reporter):
         count = 1
         for generated_report in all_gen_reports:
             self.generated_report = generated_report
-            filename = 'game_recap_' + count + '.wav'
+            filename = f"game_recap_{count}.wav"
             count += 1
             super().convert_to_audio('Algieba', filename)
+
+    def add_audio_tags(self):
+        tagged_reports = []
+        for generated_report in self.generated_report:
+            self.generated_report = generated_report
+            tagged_reports.append(super().add_audio_tags())
+
+        self.generated_report = tagged_reports
 
 
