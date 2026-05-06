@@ -35,10 +35,15 @@ class reporter:
                 config=types.GenerateContentConfig(system_instruction=self.system_prompt),contents=self.content_prompt
             )
             self.generated_report = reporter_response.text
+            print("Generating Script.......Success!")
             return self.generated_report
         except Exception as e:
             print("Gemini failed script creation failed")
+            print(e)
+            return None
        
+    def add_transition(self):
+        return None
 
     def add_audio_tags(self):
 
@@ -61,12 +66,14 @@ class reporter:
                 
             )
             self.generated_report = reporter_response.text
+            print("Audio Tags added successfully")
             return self.generated_report
         except Exception as e:
             print("Gemini audio tag generation failed")
+            print(e)
             return None
         
-        print("Audio Tags added successfully")
+        
         
         
     
@@ -111,26 +118,32 @@ class reporter:
             print("No report generated, Audio failed")
             return None
 
-        client = genai.Client()
+        try:
+            client = genai.Client()
 
-        response = client.models.generate_content(
-        model="gemini-3.1-flash-tts-preview",
-        contents=self.generated_report,
-        config=types.GenerateContentConfig(
-            response_modalities=["AUDIO"],
-            speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                    voice_name=voice,
+            response = client.models.generate_content(
+            model="gemini-3.1-flash-tts-preview",
+            contents=self.generated_report,
+            config=types.GenerateContentConfig(
+                response_modalities=["AUDIO"],
+                speech_config=types.SpeechConfig(
+                    voice_config=types.VoiceConfig(
+                        prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                        voice_name=voice,
+                        )
                     )
-                )
-            ),
-        )
-        )
+                ),
+            )
+            )
+        except Exception as e:
+            print("Audio conversion failed")
+            return None
 
-        print("Audio generated successfully")
+        
 
         data = response.candidates[0].content.parts[0].inline_data.data
+
+        print("Audio generated successfully")
 
         wave_file(file_name, data)
         return None
@@ -192,6 +205,9 @@ class hot_take_reporter(reporter):
 
     def convert_to_audio(self):
         super().convert_to_audio('Iapetus', 'hot_take_reporter.wav')
+        
+    def add_transition(self):
+        return None
 
 class regular_reporter(reporter):
 
@@ -236,8 +252,13 @@ class regular_reporter(reporter):
 
     def convert_to_audio(self):
         super().convert_to_audio('Gacrux', 'regular_reporter.wav')
+        
+    def add_transition(self):
+        intro = "Now we're gonna take a look at this weeks statitsical leaders. "
+        self.generated_report = intro + self.generated_report 
 
 
+#Dont move this its meant to be on same level as class cuz game_recap reporter needs it
 def process_game(game_team_groups,team_names):
         winner = game_team_groups.iloc[game_team_groups['PTS'].idxmax()]
         loser = game_team_groups.iloc[game_team_groups['PTS'].idxmin()]
@@ -292,6 +313,8 @@ class game_recap_reporter(reporter):
         print("Data injected into prompt......success!")
 
 
+    def add_transition(self):
+        return None
         
 
     def generate_report(self):
