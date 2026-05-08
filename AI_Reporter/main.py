@@ -169,7 +169,8 @@ def convert_to_podcast(week_num):
     
     combined = intro_wav + game_recap1_wav + game_recap2_wav + regular__wav + hot_take_wav + conclusion_wav
     
-    combined.export("final_podcast.wav",format="wav")
+    podcast_name = f"week{week_num}_podcast.wav"
+    combined.export(podcast_name,format="wav")
 
 
 def main():

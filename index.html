@@ -31,12 +31,23 @@
     </section>
 
     <section class="section">
-      <h2>Podcast</h2>
-      <audio controls style="width: 100%;">
-        <source src="./AI_Reporter/final_podcast.wav" type="audio/wav">
+      <div class="section-head">
+        <h2>Podcast</h2>
+        <div class="muted tiny">Choose a week</div>
+      </div>
+
+      <select id="podcast-select" class="search"></select>
+
+      <audio id="podcast-player" controls>
+        <source id="podcast-source" src="" type="audio/wav">
         Your browser does not support the audio element.
       </audio>
+
+      <div id="podcast-empty" class="muted tiny" style="display:none; margin-top:12px;">
+        No podcast available yet.
+      </div>
     </section>
+      
 
     <section class="section">
       <div class="section-head">

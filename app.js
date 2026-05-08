@@ -221,6 +221,54 @@ function renderTeams() {
   });
 }
 
+const podcastEpisodes = [
+  { label: "Week 1", file: "./AI_Reporter/week1_podcast.wav" },
+  { label: "Week 2", file: "./AI_Reporter/week2_podcast.wav" },
+  { label: "Week 3", file: "./AI_Reporter/week3_podcast.wav" },
+  { label: "Week 4", file: "./AI_Reporter/week4_podcast.wav" },
+  { label: "Week 5", file: "./AI_Reporter/week5_podcast.wav" },
+  { label: "Week 6", file: "./AI_Reporter/week6_podcast.wav" },
+  { label: "Week 7", file: "./AI_Reporter/week7_podcast.wav" },
+  { label: "Week 8", file: "./AI_Reporter/week8_podcast.wav" }
+];
+
+function setupPodcastPlayer(availableEpisodes) {
+  const select = document.getElementById("podcast-select");
+  const player = document.getElementById("podcast-player");
+  const source = document.getElementById("podcast-source");
+  const empty = document.getElementById("podcast-empty");
+
+  if (!select || !player || !source || !empty) return;
+
+  if (!availableEpisodes.length) {
+    select.style.display = "none";
+    player.style.display = "none";
+    empty.style.display = "block";
+    return;
+  }
+
+  select.innerHTML = "";
+
+  for (const episode of availableEpisodes) {
+    const option = document.createElement("option");
+    option.value = episode.file;
+    option.textContent = episode.label;
+    select.appendChild(option);
+  }
+
+  const newestEpisode = availableEpisodes[availableEpisodes.length - 1];
+  select.value = newestEpisode.file;
+  source.src = newestEpisode.file;
+  source.type = "audio/wav";
+  player.load();
+
+  select.addEventListener("change", () => {
+    source.src = select.value;
+    source.type = "audio/wav";
+    player.load();
+  });
+}
+
 async function main() {
   let v = Date.now();
 
@@ -248,11 +296,17 @@ async function main() {
     renderMVPLadder([]);
   }
 
+  const CURRENT_WEEK = 1;
+  const availablePodcastEpisodes = podcastEpisodes.slice(0, CURRENT_WEEK);
+  setupPodcastPlayer(availablePodcastEpisodes);
+
   renderLeaders();
 
   document.getElementById("player-search").addEventListener("input", renderPlayers);
   renderPlayers();
   renderTeams();
 }
+
+
 
 main();
