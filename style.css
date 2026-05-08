@@ -314,3 +314,9 @@ tr:hover td{
   h1{ font-size: 24px; }
   .leaders-grid{ grid-template-columns: 1fr; }
 }
+
+audio {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 12px;
+}
