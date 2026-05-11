@@ -9,10 +9,7 @@
         "RPG":15.5,
         "AST":9.5,
         "BLK":1.5,
-        "STL":3.5,
-        "Unnamed: 10":null,
-        "WEEK":null,
-        "2":null
+        "STL":3.5
     },
     {
         "tblTEAM":"DAB",
@@ -24,10 +21,7 @@
         "RPG":15.0,
         "AST":9.5,
         "BLK":1.5,
-        "STL":3.0,
-        "Unnamed: 10":null,
-        "WEEK":null,
-        "2":null
+        "STL":3.0
     },
     {
         "tblTEAM":"ECTA",
@@ -39,10 +33,7 @@
         "RPG":16.0,
         "AST":10.5,
         "BLK":1.5,
-        "STL":3.0,
-        "Unnamed: 10":null,
-        "WEEK":null,
-        "2":null
+        "STL":3.0
     },
     {
         "tblTEAM":"THREES",
@@ -54,9 +45,6 @@
         "RPG":23.5,
         "AST":14.5,
         "BLK":2.0,
-        "STL":3.5,
-        "Unnamed: 10":null,
-        "WEEK":null,
-        "2":null
+        "STL":3.5
     }
 ]
