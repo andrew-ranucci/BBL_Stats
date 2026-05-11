@@ -2,61 +2,61 @@
     {
         "tblTEAM":"WESTDIST",
         "W":0,
-        "L":0.0,
+        "L":0,
         "PPG":49.5,
         "FG%":48.623853211,
         "3P%":44.7368421053,
         "RPG":15.5,
         "AST":9.5,
         "BLK":1.5,
-        "STL":3.5
+        "STL":3.5,
+        "Unnamed: 10":null,
+        "WEEK":null,
+        "2":null
     },
     {
         "tblTEAM":"DAB",
         "W":0,
-        "L":0.0,
+        "L":0,
         "PPG":47.5,
         "FG%":51.2820512821,
         "3P%":51.724137931,
         "RPG":15.0,
         "AST":9.5,
         "BLK":1.5,
-        "STL":3.0
+        "STL":3.0,
+        "Unnamed: 10":null,
+        "WEEK":null,
+        "2":null
     },
     {
         "tblTEAM":"ECTA",
         "W":0,
-        "L":0.0,
+        "L":0,
         "PPG":44.5,
         "FG%":48.7179487179,
         "3P%":39.3939393939,
         "RPG":16.0,
         "AST":10.5,
         "BLK":1.5,
-        "STL":3.0
+        "STL":3.0,
+        "Unnamed: 10":null,
+        "WEEK":null,
+        "2":null
     },
     {
         "tblTEAM":"THREES",
         "W":0,
-        "L":0.0,
+        "L":0,
         "PPG":39.5,
         "FG%":48.6486486486,
         "3P%":31.8181818182,
         "RPG":23.5,
         "AST":14.5,
         "BLK":2.0,
-        "STL":3.5
-    },
-    {
-        "tblTEAM":"WEEK",
-        "W":2,
-        "L":null,
-        "PPG":null,
-        "FG%":null,
-        "3P%":null,
-        "RPG":null,
-        "AST":null,
-        "BLK":null,
-        "STL":null
+        "STL":3.5,
+        "Unnamed: 10":null,
+        "WEEK":null,
+        "2":null
     }
 ]
