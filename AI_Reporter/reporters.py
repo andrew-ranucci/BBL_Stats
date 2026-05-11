@@ -78,7 +78,7 @@ class reporter:
         
     
     def process_game_logs(self,game_logs,current_week):
-        
+                
         #Split into current weeks and past weeks
         past_game_logs = game_logs[game_logs["Week"] < current_week ]
         current_week_log = game_logs[game_logs["Week"] == current_week]
@@ -169,7 +169,10 @@ class hot_take_reporter(reporter):
 
 
         #Compute player season averages
-        player_averages = past_game_logs.groupby("Name",sort=False)[["PTS", "FGA", "FGM", "3PA", "3PM", "REB", "AST", "STL", "BLK"]].mean().reset_index()
+        
+        player_averages = past_game_logs.groupby("Name",sort=False)[["PTS", "FGA", "FGM", "3PA", "3PM", "REB", "AST", "STL", "BLK","GP"]].mean().reset_index()
+
+        player_averages['GP'] = player_averages['GP'] * (current_week - 1)
 
         player_averages['FG_P'] = ((player_averages['FGM'] / player_averages['FGA']) * 100).round(2)
 
@@ -180,7 +183,7 @@ class hot_take_reporter(reporter):
         lines = []
 
         for _, row in player_averages.iterrows():
-            line = f"{row['Name']} averages {clean_num(row['PTS'])} points, {clean_num(row['FG_P'])}% field goal percentage, {clean_num(row['3P_P'])}% three point percentage, {clean_num(row['REB'])} rebounds, {clean_num(row['AST'])} assists, {clean_num(row['STL'])} steals, and {clean_num(row['BLK'])} blocks"
+            line = f"{row['Name']} averages {clean_num(row['PTS'])} points, {clean_num(row['FG_P'])}% field goal percentage, {clean_num(row['3P_P'])}% three point percentage, {clean_num(row['REB'])} rebounds, {clean_num(row['AST'])} assists, {clean_num(row['STL'])} steals, {clean_num(row['BLK'])} blocks, and has played in {clean_num(row['GP'])} games."
             lines.append(line)
 
         averages_string = "\n".join(lines) 

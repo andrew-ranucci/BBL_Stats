@@ -65,16 +65,6 @@ def create_scripts(game_logs,current_week,results_dict):
         results_dict['regular_stats_reporter'] = regular_stats_reporter
         results_dict['hot_take_reporter'] = hot_take_reporter
         results_dict['game_recap_reporter'] = game_recap_reporter
-    
-    
-    
-    '''
-    count = 1
-    for report in game_recap_reporter.generated_report:
-         filename = f"game_recap_report_{count}.txt"
-         write_report_to_file(report,filename=filename)
-         count += 1
-    '''
 
     if(not results_dict['tags']):
         reg = regular_stats_reporter.add_audio_tags()
@@ -181,6 +171,23 @@ def main():
 
     game_logs = pd.read_excel("C:\\Users\\andre\\BBL_Stats_DATA\\BBL Season 2 Stats.xlsx",sheet_name="Game Logs")
     game_logs = game_logs.dropna()
+    
+    names_dict = {
+        "SamO":"Sam Olivastro",
+        "Andrew":"Andrew Ranucci",
+        "SamL":"Sam Lamar",
+        "Ryan":"Ryan Corvo",
+        "Alex":"Alex Corvo",
+        "Matthew":"Matt Berube",
+        "Jojo":"Jojo",
+        "Gavin":"Gavin Damboise",
+        "Reydro":"Reydro",
+        "Aaron":"Aaron Burke",
+        "Jonny":"Jonny"
+        
+    }
+    
+    game_logs["Name"] = game_logs["Name"].replace(names_dict)
 
 
     results = {
