@@ -1,7 +1,7 @@
 [
     {
         "tblTEAM":"WESTDIST",
-        "W":0.0,
+        "W":0,
         "L":0.0,
         "PPG":49.5,
         "FG%":48.623853211,
@@ -13,7 +13,7 @@
     },
     {
         "tblTEAM":"DAB",
-        "W":0.0,
+        "W":0,
         "L":0.0,
         "PPG":47.5,
         "FG%":51.2820512821,
@@ -25,7 +25,7 @@
     },
     {
         "tblTEAM":"ECTA",
-        "W":0.0,
+        "W":0,
         "L":0.0,
         "PPG":44.5,
         "FG%":48.7179487179,
@@ -37,7 +37,7 @@
     },
     {
         "tblTEAM":"THREES",
-        "W":0.0,
+        "W":0,
         "L":0.0,
         "PPG":39.5,
         "FG%":48.6486486486,
@@ -48,32 +48,8 @@
         "STL":3.5
     },
     {
-        "tblTEAM":null,
-        "W":null,
-        "L":null,
-        "PPG":null,
-        "FG%":null,
-        "3P%":null,
-        "RPG":null,
-        "AST":null,
-        "BLK":null,
-        "STL":null
-    },
-    {
-        "tblTEAM":null,
-        "W":null,
-        "L":null,
-        "PPG":null,
-        "FG%":null,
-        "3P%":null,
-        "RPG":null,
-        "AST":null,
-        "BLK":null,
-        "STL":null
-    },
-    {
         "tblTEAM":"WEEK",
-        "W":2.0,
+        "W":2,
         "L":null,
         "PPG":null,
         "FG%":null,
