@@ -258,12 +258,12 @@ function setupPodcastPlayer(availableEpisodes) {
 
   const newestEpisode = availableEpisodes[availableEpisodes.length - 1];
   select.value = newestEpisode.file;
-  source.src = newestEpisode.file;
+  source.src = newestEpisode.file + "?v=" + Date.now();
   source.type = "audio/wav";
   player.load();
 
   select.addEventListener("change", () => {
-    source.src = select.value;
+    source.src = select.value + "?v=" + Date.now();
     source.type = "audio/wav";
     player.load();
   });
