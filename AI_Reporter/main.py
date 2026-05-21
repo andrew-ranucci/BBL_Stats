@@ -10,6 +10,7 @@ from pathlib import Path
 import wave
 from show_scripts import intro
 from pydub import AudioSegment
+import time
 
 #Remove this later and leave in reporters.py
 def write_report_to_file(report, filename):
@@ -18,7 +19,7 @@ def write_report_to_file(report, filename):
 
 #Runs all the reporters and creates a dictionary of their scripts, might have them convert their own text to speech
 #Fine for now just to see the output scripts
-def create_scripts(game_logs,current_week,results_dict):
+def create_scripts(game_logs,current_week,results_dict,requests):
     regular_stats_reporter = reporters.regular_reporter(reporter_system_prompt,reporter_content_prompt,reporter_TAG_system_prompt,TAG_content_prompt)
     if(current_week == 1):
         hot_take_reporter = reporters.hot_take_reporter(hot_take_week_one_system_prompt,hot_take_content_prompt,hot_take_TAG_system_prompt,TAG_content_prompt)
@@ -65,6 +66,9 @@ def create_scripts(game_logs,current_week,results_dict):
         results_dict['regular_stats_reporter'] = regular_stats_reporter
         results_dict['hot_take_reporter'] = hot_take_reporter
         results_dict['game_recap_reporter'] = game_recap_reporter
+        
+    print("Waiting one minutw")
+    time.sleep(65)
 
     if(not results_dict['tags']):
         reg = regular_stats_reporter.add_audio_tags()
@@ -188,8 +192,7 @@ def main():
     }
     
     game_logs["Name"] = game_logs["Name"].replace(names_dict)
-
-
+    
     results = {
         'process':False,
         'reports':False,
@@ -199,14 +202,50 @@ def main():
         'hot_take_reporter':None,
         'game_recap_reporter':None
     }
+    
+    '''
+    if(args.scripts == 1):
+        results["process"]  = True
+        results["reports"] = True
+        results["tags"] = True
+    '''
+
+    '''
+    #dumb way to do this fix later
+    dummy_count = 0
+
+    if (Path("regular_reporter.wav").exists()):
+        results['regular_stats_reporter'] = True
+        dummy_count += 1
+    if (Path("hot_take_reporter.wav").exists()):
+        results['hot_take_reporter'] = True
+        dummy_count += 1
+    if (Path("game_recap_1.wav").exists() and Path("game_recap_2.wav").exists()):
+        results['game_recap_reporter'] = True
+        dummy_count += 1
+        
+    if (dummy_count == 3):
+        results['process'] = True
+        results['reports'] = True
+        results['tags'] = True
+        results['audio'] = True
+
+    '''
+    
     count = 0
-    while((not results['process']) 
+    requests = 0
+    while((count != 5) 
+          or (not results['process']) 
           or (not results['reports'])
           or (not results['tags']) 
           or (not results['audio'])):
         count += 1
         print(f"Iteration number {count}")
-        results = create_scripts(game_logs,args.current_week,results)
+        results = create_scripts(game_logs,args.current_week,results,requests)
+        
+        #Need to do this better, if program runs perfectly it will still wait 60s unecessarily
+        print(f"Waiting 60s")
+        time.sleep(60)
     
     convert_to_podcast(args.current_week)
 

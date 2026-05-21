@@ -31,7 +31,7 @@ class reporter:
 
         try:
             reporter_response = client.models.generate_content(
-                model="gemini-2.5-flash-lite",
+                model="gemini-2.5-flash",
                 config=types.GenerateContentConfig(system_instruction=self.system_prompt),contents=self.content_prompt
             )
             self.generated_report = reporter_response.text
@@ -61,7 +61,7 @@ class reporter:
 
         try:
             reporter_response = client.models.generate_content(
-                model="gemini-2.5-flash-lite",
+                model="gemini-2.5-flash",
                 config=types.GenerateContentConfig(system_instruction=tag_content_prompt),contents=self.TAG_content_prompt
                 
             )
