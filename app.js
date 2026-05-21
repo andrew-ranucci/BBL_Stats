@@ -125,11 +125,11 @@ function renderMVPLadder(rows) {
   if (!el) return;
 
   const medal = (r) => {
-  if (r === 1) return "👑";
-  if (r === 2) return "🥈";
-  if (r === 3) return "🥉";
-  return "⭐";
-};
+    if (r === 1) return "👑";
+    if (r === 2) return "🥈";
+    if (r === 3) return "🥉";
+    return "⭐";
+  };
 
   const data = [...rows]
     .filter(r => r.Rank != null)
