@@ -124,12 +124,17 @@ function renderMVPLadder(rows) {
   const el = document.getElementById("mvp-ladder");
   if (!el) return;
 
-  const medal = (r) => (r === 1 ? "👑" : r === 2 ? "🥈" : "🥉");
+  const medal = (r) => {
+  if (r === 1) return "👑";
+  if (r === 2) return "🥈";
+  if (r === 3) return "🥉";
+  return "⭐";
+};
 
   const data = [...rows]
     .filter(r => r.Rank != null)
     .sort((a, b) => Number(a.Rank) - Number(b.Rank))
-    .slice(0, 3);
+    .slice(0, 5);
 
   el.innerHTML = data.map(r => {
     const rank = Number(r.Rank);
