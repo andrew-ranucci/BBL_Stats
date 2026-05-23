@@ -80,8 +80,9 @@ class reporter:
     def process_game_logs(self,game_logs,current_week):
                 
         #Split into current weeks and past weeks
-        past_game_logs = game_logs[game_logs["Week"] < current_week ]
-        current_week_log = game_logs[game_logs["Week"] == current_week]
+        weeks = pd.to_numeric(game_logs["Week"])
+        past_game_logs = game_logs[weeks < current_week].copy()
+        current_week_log = game_logs[weeks == current_week].copy()
 
         #Add shooting percentages
         current_week_log['FG_P'] = ((current_week_log['FGM'] / current_week_log['FGA']) * 100).round(2)
