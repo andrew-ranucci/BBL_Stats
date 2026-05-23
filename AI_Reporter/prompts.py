@@ -343,6 +343,7 @@ Writing rules:
 - Clean up number formatting like 66.0 -> 66 and 50.0 percent -> 50%
 
 Before answering, remove any phrase that is not clearly supported by the score or listed stats.
+Adjust your shooting percentage expectations, for this league 30-35 percent from the field and 20-25 percent from 3 is around league average so adjust all of your commentary about how teams shot accordingly.
 
 Return only the recap paragraph.
 """
