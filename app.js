@@ -274,6 +274,57 @@ function setupPodcastPlayer(availableEpisodes) {
   });
 }
 
+async function loadDebateSegments(v) {
+  try {
+    const res = await fetch(`data/debate_segments.json?v=${v}`);
+    if (!res.ok) throw new Error("Could not load debate segments");
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+function setupDebatePlayer(availableSegments) {
+  const select = document.getElementById("debate-select");
+  const player = document.getElementById("debate-player");
+  const source = document.getElementById("debate-source");
+  const empty = document.getElementById("debate-empty");
+
+  if (!select || !player || !source || !empty) return;
+
+  if (!availableSegments.length) {
+    select.style.display = "none";
+    player.style.display = "none";
+    empty.style.display = "block";
+    return;
+  }
+
+  select.style.display = "block";
+  player.style.display = "block";
+  empty.style.display = "none";
+
+  select.innerHTML = "";
+
+  for (const segment of availableSegments) {
+    const option = document.createElement("option");
+    option.value = segment.file;
+    option.textContent = segment.label;
+    select.appendChild(option);
+  }
+
+  const newestSegment = availableSegments[availableSegments.length - 1];
+  select.value = newestSegment.file;
+  source.src = newestSegment.file + "?v=" + Date.now();
+  source.type = "audio/wav";
+  player.load();
+
+  select.addEventListener("change", () => {
+    source.src = select.value + "?v=" + Date.now();
+    source.type = "audio/wav";
+    player.load();
+  });
+}
+
 async function main() {
   let v = Date.now();
 
@@ -304,6 +355,9 @@ async function main() {
   const CURRENT_WEEK = 2;
   const availablePodcastEpisodes = podcastEpisodes.slice(0, CURRENT_WEEK);
   setupPodcastPlayer(availablePodcastEpisodes);
+  
+  const availableDebateSegments = await loadDebateSegments(v);
+  setupDebatePlayer(availableDebateSegments);
 
   renderLeaders();
 

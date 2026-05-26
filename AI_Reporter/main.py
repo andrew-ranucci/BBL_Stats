@@ -11,6 +11,7 @@ import wave
 from show_scripts import intro
 from pydub import AudioSegment
 import time
+from debate_show import debate_show
 
 #Remove this later and leave in reporters.py
 def write_report_to_file(report, filename):
@@ -171,6 +172,7 @@ def main():
     load_dotenv()
     parser = argparse.ArgumentParser()
     parser.add_argument("current_week",type=int)
+    parser.add_argument("player",type=str)
     args = parser.parse_args()
 
     game_logs = pd.read_excel("C:\\Users\\andre\\BBL_Stats_DATA\\BBL Season 2 Stats.xlsx",sheet_name="Game Logs")
@@ -183,71 +185,47 @@ def main():
         "Ryan":"Ryan Corvo",
         "Alex":"Alex Corvo",
         "Matthew":"Matt Berube",
-        "Jojo":"Jojo",
+        "Jojo":"Jojo Chapman",
         "Gavin":"Gavin Damboise",
-        "Reydro":"Reydro",
+        "Reydro":"Reydro Phillipe",
         "Aaron":"Aaron Burke",
-        "Jonny":"Jonny"
+        "Jonny":"Jonny Cassarola"
         
     }
     
     game_logs["Name"] = game_logs["Name"].replace(names_dict)
     
-    results = {
-        'process':False,
-        'reports':False,
-        'tags':False,
-        'audio':False,
-        'regular_stats_reporter':None,
-        'hot_take_reporter':None,
-        'game_recap_reporter':None
-    }
-    
-    '''
-    if(args.scripts == 1):
-        results["process"]  = True
-        results["reports"] = True
-        results["tags"] = True
-    '''
-
-    '''
-    #dumb way to do this fix later
-    dummy_count = 0
-
-    if (Path("regular_reporter.wav").exists()):
-        results['regular_stats_reporter'] = True
-        dummy_count += 1
-    if (Path("hot_take_reporter.wav").exists()):
-        results['hot_take_reporter'] = True
-        dummy_count += 1
-    if (Path("game_recap_1.wav").exists() and Path("game_recap_2.wav").exists()):
-        results['game_recap_reporter'] = True
-        dummy_count += 1
+    if(args.player != "None"):
+        debate_show(names_dict,game_logs,args.player,args.current_week)
         
-    if (dummy_count == 3):
-        results['process'] = True
-        results['reports'] = True
-        results['tags'] = True
-        results['audio'] = True
-
-    '''
-    
-    count = 0
-    requests = 0
-    while((count != 5) 
-          or (not results['process']) 
-          or (not results['reports'])
-          or (not results['tags']) 
-          or (not results['audio'])):
-        count += 1
-        print(f"Iteration number {count}")
-        results = create_scripts(game_logs,args.current_week,results,requests)
+    else:
         
-        #Need to do this better, if program runs perfectly it will still wait 60s unecessarily
-        print(f"Waiting 60s")
-        time.sleep(60)
-    
-    convert_to_podcast(args.current_week)
+        results = {
+            'process':False,
+            'reports':False,
+            'tags':False,
+            'audio':False,
+            'regular_stats_reporter':None,
+            'hot_take_reporter':None,
+            'game_recap_reporter':None
+        }
+        
+        count = 0
+        requests = 0
+        while((count != 5) 
+            or (not results['process']) 
+            or (not results['reports'])
+            or (not results['tags']) 
+            or (not results['audio'])):
+            count += 1
+            print(f"Iteration number {count}")
+            results = create_scripts(game_logs,args.current_week,results,requests)
+            
+            #Need to do this better, if program runs perfectly it will still wait 60s unecessarily
+            print(f"Waiting 60s")
+            time.sleep(60)
+        
+        convert_to_podcast(args.current_week)
 
 
 if __name__ == "__main__":
