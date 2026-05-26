@@ -276,7 +276,7 @@ function setupPodcastPlayer(availableEpisodes) {
 
 async function loadDebateSegments(v) {
   try {
-    const res = await fetch(`data/debate_segments.json?v=${v}`);
+    const res = await fetch(`AI_Reporter/data/debate_segments.json?v=${v}`);
     if (!res.ok) throw new Error("Could not load debate segments");
     return await res.json();
   } catch {
@@ -355,7 +355,7 @@ async function main() {
   const CURRENT_WEEK = 2;
   const availablePodcastEpisodes = podcastEpisodes.slice(0, CURRENT_WEEK);
   setupPodcastPlayer(availablePodcastEpisodes);
-  
+
   const availableDebateSegments = await loadDebateSegments(v);
   setupDebatePlayer(availableDebateSegments);
 
