@@ -2,6 +2,7 @@ from google import genai
 from google.genai import types
 import pandas as pd
 import wave
+from google.genai import errors
 
 #Helper to get rid of .0 decimal in AI script
 def clean_num(x):
@@ -31,7 +32,7 @@ class reporter:
 
         try:
             reporter_response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.5-flash-lite",
                 config=types.GenerateContentConfig(system_instruction=self.system_prompt),contents=self.content_prompt
             )
             self.generated_report = reporter_response.text
@@ -61,7 +62,7 @@ class reporter:
 
         try:
             reporter_response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.5-flash-lite",
                 config=types.GenerateContentConfig(system_instruction=tag_content_prompt),contents=self.TAG_content_prompt
                 
             )
@@ -123,7 +124,7 @@ class reporter:
             client = genai.Client()
 
             response = client.models.generate_content(
-            model="gemini-3.1-flash-tts-preview",
+            model="gemini-2.5-flash-preview-tts",
             contents=self.generated_report,
             config=types.GenerateContentConfig(
                 response_modalities=["AUDIO"],
@@ -136,8 +137,9 @@ class reporter:
                 ),
             )
             )
-        except Exception as e:
+        except Exception as e:  
             print("Audio conversion failed")
+            print(e)
             return None
 
         

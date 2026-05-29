@@ -17,6 +17,70 @@ from debate_show import debate_show
 def write_report_to_file(report, filename):
         with open(filename, "w", encoding="utf-8") as file:
             file.write(report)
+            
+def read_report_from_file(filename):
+    with open(filename, "r", encoding="utf-8") as file:
+        return file.read()
+    
+def write_game_recaps_to_file(reports):
+    for i, report in enumerate(reports, start=1):
+        write_report_to_file(report, f"game_recap_{i}.txt")
+        
+def build_results_from_files():
+    reports_done = (
+        Path("regular_report.txt").is_file()
+        and Path("hot_take_report.txt").is_file()
+        and Path("game_recap_1.txt").is_file()
+        and Path("game_recap_2.txt").is_file()
+    )
+
+    tags_done = (
+        Path("regular_report_tagged.txt").is_file()
+        and Path("hot_take_report_tagged.txt").is_file()
+        and Path("game_recap_1_tagged.txt").is_file()
+        and Path("game_recap_2_tagged.txt").is_file()
+    )
+
+    audio_done = (
+        Path("regular_reporter.wav").is_file()
+        and Path("hot_take_reporter.wav").is_file()
+        and Path("game_recap_1.wav").is_file()
+        and Path("game_recap_2.wav").is_file()
+    )
+
+    return {
+        "process": False,
+        "reports": reports_done,
+        "tags": tags_done,
+        "audio": audio_done,
+        "regular_stats_reporter": None,
+        "hot_take_reporter": None,
+        "game_recap_reporter": None
+    }
+
+def read_game_recaps_from_file():
+    reports = []
+    count = 1
+
+    while Path(f"game_recap_{count}.txt").is_file():
+        reports.append(read_report_from_file(f"game_recap_{count}.txt"))
+        count += 1
+
+    return reports
+
+def write_game_recaps_to_file_tagged(reports):
+    for i, report in enumerate(reports, start=1):
+        write_report_to_file(report, f"game_recap_{i}_tagged.txt")
+
+def read_game_recaps_from_file_tagged():
+    reports = []
+    count = 1
+
+    while Path(f"game_recap_{count}_tagged.txt").is_file():
+        reports.append(read_report_from_file(f"game_recap_{count}_tagged.txt"))
+        count += 1
+
+    return reports
 
 #Runs all the reporters and creates a dictionary of their scripts, might have them convert their own text to speech
 #Fine for now just to see the output scripts
@@ -29,7 +93,31 @@ def create_scripts(game_logs,current_week,results_dict,requests):
     
     game_recap_reporter = reporters.game_recap_reporter(game_recap_system_prompt,game_recap_content_prompt,game_recap_TAG_system_prompt,TAG_content_prompt)
 
-    
+    if results_dict["tags"]:
+        print("Tagged script files found. Loading tagged scripts.")
+
+        regular_stats_reporter.generated_report = read_report_from_file(
+            "regular_report_tagged.txt"
+        )
+
+        hot_take_reporter.generated_report = read_report_from_file(
+            "hot_take_report_tagged.txt"
+        )
+
+        game_recap_reporter.generated_report = read_game_recaps_from_file_tagged()
+
+    elif results_dict["reports"]:
+        print("Report files found. Loading untagged scripts.")
+
+        regular_stats_reporter.generated_report = read_report_from_file(
+            "regular_report.txt"
+        )
+
+        hot_take_reporter.generated_report = read_report_from_file(
+            "hot_take_report.txt"
+        )
+
+        game_recap_reporter.generated_report = read_game_recaps_from_file()
 
     #Replace all of this with one function to run each reporter cuz main is getting cluttered
 
@@ -61,8 +149,19 @@ def create_scripts(game_logs,current_week,results_dict,requests):
         hot_take_reporter.add_transition()
         game_recap_reporter.add_transition()
 
-        write_report_to_file(regular_stats_reporter.generated_report,filename="regular_report.txt")
-        write_report_to_file(hot_take_reporter.generated_report,filename="hot_take_report.txt")
+        write_report_to_file(
+            regular_stats_reporter.generated_report,
+            filename="regular_report.txt"
+        )
+
+        write_report_to_file(
+            hot_take_reporter.generated_report,
+            filename="hot_take_report.txt"
+        )
+
+        write_game_recaps_to_file(game_recap_reporter.generated_report)
+        
+        
         results_dict['reports'] = True
         results_dict['regular_stats_reporter'] = regular_stats_reporter
         results_dict['hot_take_reporter'] = hot_take_reporter
@@ -85,6 +184,18 @@ def create_scripts(game_logs,current_week,results_dict,requests):
         #Need a way to test this
         game_recap_reporter.add_audio_tags()
         
+        write_report_to_file(
+        regular_stats_reporter.generated_report,
+        filename="regular_report_tagged.txt"
+        )
+
+        write_report_to_file(
+            hot_take_reporter.generated_report,
+            filename="hot_take_report_tagged.txt"
+        )
+
+        write_game_recaps_to_file_tagged(game_recap_reporter.generated_report)
+        
         results_dict['tags'] = True
         results_dict['regular_stats_reporter'] = regular_stats_reporter
         results_dict['hot_take_reporter'] = hot_take_reporter
@@ -95,7 +206,17 @@ def create_scripts(game_logs,current_week,results_dict,requests):
         regular_stats_reporter.convert_to_audio()
         hot_take_reporter.convert_to_audio()
         game_recap_reporter.convert_to_audio()
-        results_dict['audio'] = True
+
+        results_dict["audio"] = (
+            Path("regular_reporter.wav").is_file()
+            and Path("hot_take_reporter.wav").is_file()
+            and Path("game_recap_1.wav").is_file()
+            and Path("game_recap_2.wav").is_file()
+        )
+
+        if not results_dict["audio"]:
+            print("Audio conversion failed or incomplete.")
+            return results_dict
     
     return results_dict
 
@@ -134,7 +255,7 @@ def convert_to_podcast(week_num):
 
 #Could hard code the intro instead if hitting gemini token limit too frequently
     response = client.models.generate_content(
-    model="gemini-3.1-flash-tts-preview",
+    model="gemini-2.5-flash-preview-tts",
     contents=script,
         config=types.GenerateContentConfig(
         response_modalities=["AUDIO"],
@@ -199,7 +320,9 @@ def main():
         debate_show(names_dict,game_logs,args.player,args.current_week)
         
     else:
+        results = build_results_from_files()
         
+        '''
         results = {
             'process':False,
             'reports':False,
@@ -209,6 +332,7 @@ def main():
             'hot_take_reporter':None,
             'game_recap_reporter':None
         }
+        '''
         
         count = 0
         requests = 0
