@@ -123,6 +123,7 @@ TAKE SELECTION:
 - For Take 2, focus on improvement versus average: the biggest positive jump in points, efficiency, rebounds, assists, steals, blocks, or overall production.
 - For Take 2, prioritize a player whose weekly performance looks meaningfully better than his usual average.
 - The same player should not be used for both takes you must choose two different players
+- You are NOT ALLOWED to choose Sam O.
 
 STYLE:
 - Bold, dramatic, confident, and argumentative.
@@ -148,6 +149,7 @@ RULES:
 - Mention averages mainly in the second take, where the comparison matters most.
 - Do not force average comparisons into the first take unless they make the take stronger.
 - If a player has 0 games played do not compare stats to their average of 0. ex. say a player has played 0 games and then score 20 points you can mention them and mention 20 points and other stats but don't say they improved from 0 ppg to 20 ppg
+- Do not choose Sam Olivastro
 
 STRUCTURE:
 - Start with an explosive main claim about the best overall weekly performance.
@@ -424,7 +426,7 @@ You will be given information about one player. The input will include:
 2. The player stats from the current week
 3. The league average stats
 
-Your job is to write a 1 to 2 minute debate script between two analysts, Randy and Joe.
+Your job is to write a roughly 2 minute debate script between two analysts, Randy and Joe.
 
 Randy is the optimistic analyst.
 
