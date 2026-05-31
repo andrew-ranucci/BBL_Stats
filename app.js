@@ -352,7 +352,7 @@ async function main() {
     renderMVPLadder([]);
   }
 
-  const CURRENT_WEEK = 3;
+  const CURRENT_WEEK = 4;
   const availablePodcastEpisodes = podcastEpisodes.slice(0, CURRENT_WEEK);
   setupPodcastPlayer(availablePodcastEpisodes);
 
